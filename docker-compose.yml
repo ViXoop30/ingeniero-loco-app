@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "7001:7001"
+    environment:
+      - NODE_ENV=production
+      - PORT=7001
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    restart: always
