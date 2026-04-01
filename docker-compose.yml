@@ -9,4 +9,14 @@ services:
       - NODE_ENV=production
       - PORT=7001
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      - ./db.json:/app/db.json
     restart: always
+    networks:
+      - red_interna_apps
+
+networks:
+  red_interna_apps:
+    external: true

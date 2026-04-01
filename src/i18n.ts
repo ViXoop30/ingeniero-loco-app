@@ -10,7 +10,9 @@ const resources = {
         store: 'Tienda',
         showcase: 'Proyectos',
         admin: 'Admin',
-        privacy: 'Privacidad'
+        privacy: 'Privacidad',
+        projects: "Proyectos",
+        timeline: "Tiempo"
       },
       banner: {
         text: '"Estoy agendando reuniones para ver sus casos y generar la mejor solución para su negocio"',
@@ -55,10 +57,10 @@ const resources = {
       },
       home: {
         availability: 'DISPONIBILIDAD INMEDIATA',
-        hero_title: '¿Necesitas una <1>Solución Real</1> para tu Negocio?',
-        hero_desc: 'Estoy agendando reuniones personalizadas para analizar tus casos específicos y diseñar la arquitectura de sistemas que llevará tu empresa al siguiente nivel.',
-        hero_cta: 'AGENDAR REUNIÓN',
-        hero_sub: 'Respuesta garantizada en menos de 24h',
+        hero_title: '¿Necesitas <1>Escalar</1> tu Facturación?',
+        hero_desc: 'Orquestamos la arquitectura técnica de élite que tu negocio necesita para automatizar procesos y maximizar el ROI. Cupos limitados para auditoría este mes.',
+        hero_cta: 'RESERVAR SESIÓN ESTRATÉGICA',
+        hero_sub: 'Solo 2 espacios disponibles para proyectos nuevos',
         hero_whatsapp_msg: 'Hola, quiero agendar una reunión para ver mi caso.',
         active_systems: 'SISTEMAS ACTIVOS',
         work_order: 'ORDEN DE TRABAJO',
@@ -74,6 +76,12 @@ const resources = {
         view_all: 'VER TODO EL CATÁLOGO',
         social_connect: 'Conéctate con el Núcleo:',
         system_online: 'Sistema en Línea',
+        vibecoding: 'ORQUESTRACIÓN CON VIBECODING',
+        vibecoding_title: 'CONSTRUIMOS <br/> <span class="text-white/20">A LA VELOCIDAD DE TU NEGOCIO</span>',
+        vibecoding_desc: 'Utilizamos **Inteligencia Artificial de Grado Industrial** y la metodología **VibeCoding** para orquestar sistemas complejos en tiempo récord. No escribimos código; orquestamos resultados.',
+        needs_title: 'TU NECESIDAD <br/><span class="text-white/10">NUESTRA SOLUCIÓN</span>',
+        needs_subtitle: 'Análisis de Impacto en Tiempo Real',
+        needs_desc: 'Eliminamos la fricción técnica para acelerar el crecimiento.',
         terminal: {
           init: 'inicializando_núcleo_neural...',
           load_ai: '[OK] Cargar Modelos IA',
@@ -85,6 +93,21 @@ const resources = {
         details: 'Detalles',
         clients: 'CLIENTES',
         learn_more: 'SABER MÁS',
+        industries: {
+          title: 'MERCADOS <br/><span class="text-white/20">ESTRATÉGICOS</span>',
+          rest: { title: 'RESTAURANTES', desc: 'Orquestación de menús dinámicos y reservas en tiempo real con IA.' },
+          store: { title: 'ALMACENES', desc: 'Control de inventario inteligente y sistemas POS alimentados por VibeCoding.' },
+          liq: { title: 'BOTILLERÍAS', desc: 'E-commerce especializado con verificación de edad y stock sincronizado.' },
+          pub: { title: 'PUBS & NIGHTLIFE', desc: 'Landing pages de alto impacto con gestión de eventos y marketing autogestionado.' }
+        },
+        matrix: {
+          manual: { problem: "¿PROCESOS MANUALES LENTOS?", solution: "ORQUESTACIÓN AI-CORE", impact: "Ahorro del 70% en tiempo operativo mediante automatización neural." },
+          conversion: { problem: "¿BAJA CONVERSIÓN WEB?", solution: "UI/UX DE ÉLITE", impact: "Diseños que retienen al usuario y disparan la facturación desde el primer clic." },
+          data: { problem: "¿DESORDEN DE DATOS?", solution: "DATA ENGINE PRO", impact: "Sincronización total de inventarios y ventas en una arquitectura única." },
+          stability: { problem: "¿SISTEMAS INESTABLES?", solution: "INFRAESTRUCTURA BLINDADA", impact: "99.9% de uptime garantizado con soporte proactivo de grado industrial." },
+          visibility: { problem: "¿FALTA DE VISIBILIDAD?", solution: "ECOSISTEMA OMNICANAL", impact: "Tus productos en Google, Redes y Web de forma automatizada y coherente." },
+          support: { problem: "¿DUDAS TÉCNICAS?", solution: "SOPORTE VIBECODING", impact: "Resolución de casos complejos en <24h con análisis estratégico real." }
+        },
         store: {
           title: 'LA TIENDA',
           subtitle: 'Marketplace de Sistemas',
@@ -212,6 +235,10 @@ const resources = {
           { title: 'Visita a Silicon Valley', desc: 'Explorando las últimas fronteras de la IA para traer innovación directa a tus proyectos.' },
           { title: 'Lanzamiento de Core v2.0', desc: 'Nuestra arquitectura de sistemas ahora es un 40% más eficiente y escalable.' }
         ]
+      },
+      chat: {
+        welcome: '¡Hola! Soy el asistente virtual de El Ingeniero Loco. ¿En qué puedo ayudarte hoy?',
+        placeholder: 'Escribe tu consulta tecnológica...'
       }
     }
   },
@@ -220,9 +247,11 @@ const resources = {
       nav: {
         home: 'Home',
         store: 'Store',
-        showcase: 'Showcase',
+        showcase: 'Projects',
         admin: 'Admin',
-        privacy: 'Privacy'
+        privacy: 'Privacy',
+        projects: "Projects",
+        timeline: "Timeline"
       },
       banner: {
         text: '"I am scheduling meetings to review your cases and generate the best solution for your business"',
@@ -267,10 +296,10 @@ const resources = {
       },
       home: {
         availability: 'IMMEDIATE AVAILABILITY',
-        hero_title: 'Need a <1>Real Solution</1> for your Business?',
-        hero_desc: 'I am scheduling personalized meetings to analyze your specific cases and design the systems architecture that will take your company to the next level.',
-        hero_cta: 'SCHEDULE MEETING',
-        hero_sub: 'Guaranteed response in less than 24h',
+        hero_title: 'Need to <1>Scale</1> your Revenue?',
+        hero_desc: 'We orchestrate elite technical architecture your business needs to automate processes and maximize ROI. Limited auditoria slots this month.',
+        hero_cta: 'BOOK STRATEGIC SESSION',
+        hero_sub: 'Only 2 spaces available for new projects',
         hero_whatsapp_msg: 'Hello, I want to schedule a meeting to see my case.',
         active_systems: 'ACTIVE SYSTEMS',
         work_order: 'WORK ORDER',
@@ -286,6 +315,12 @@ const resources = {
         view_all: 'VIEW FULL CATALOG',
         social_connect: 'Connect with the Core:',
         system_online: 'System Online',
+        vibecoding: 'ORCHESTRATION WITH VIBECODING',
+        vibecoding_title: 'BUILDING <br/> <span class="text-white/20">AT THE SPEED OF YOUR BUSINESS</span>',
+        vibecoding_desc: 'We use **Industrial Grade Artificial Intelligence** and the **VibeCoding** methodology to orchestrate complex systems in record time. We don\'t write code; we orchestrate results.',
+        needs_title: 'YOUR NEED <br/><span class="text-white/10">OUR SOLUTION</span>',
+        needs_subtitle: 'Real-Time Impact Analysis',
+        needs_desc: 'We eliminate technical friction to accelerate growth.',
         terminal: {
           init: 'initializing_neural_core...',
           load_ai: '[OK] Load AI Models',
@@ -297,6 +332,21 @@ const resources = {
         details: 'Details',
         clients: 'CLIENTS',
         learn_more: 'LEARN MORE',
+        industries: {
+          title: 'STRATEGIC <br/><span class="text-white/20">MARKETS</span>',
+          rest: { title: 'RESTAURANTS', desc: 'Orchestration of dynamic menus and real-time reservations with AI.' },
+          store: { title: 'STORES', desc: 'Intelligent inventory control and POS systems powered by VibeCoding.' },
+          liq: { title: 'LIQUOR STORES', desc: 'Specialized e-commerce with age verification and synchronized stock.' },
+          pub: { title: 'PUBS & NIGHTLIFE', desc: 'High-impact landing pages with event management and self-managed marketing.' }
+        },
+        matrix: {
+          manual: { problem: "SLOW MANUAL PROCESSES?", solution: "AI-CORE ORCHESTRATION", impact: "70% saving in operational time through neural automation." },
+          conversion: { problem: "LOW WEB CONVERSION?", solution: "ELITE UI/UX", impact: "Designs that retain users and boost revenue from the first click." },
+          data: { problem: "DATA DISORDER?", solution: "DATA ENGINE PRO", impact: "Total synchronization of inventories and sales in a unique architecture." },
+          stability: { problem: "UNSTABLE SYSTEMS?", solution: "ARMORED INFRASTRUCTURE", impact: "99.9% guaranteed uptime with industrial-grade proactive support." },
+          visibility: { problem: "LACK OF VISIBILITY?", solution: "OMNICHANNEL ECOSYSTEM", impact: "Your products on Google, Social Media and Web in an automated and consistent way." },
+          support: { problem: "TECHNICAL DOUBTS?", solution: "VIBECODING SUPPORT", impact: "Resolution of complex cases in <24h with real strategic analysis." }
+        },
         store: {
           title: 'THE STORE',
           subtitle: 'Systems Marketplace',
@@ -424,6 +474,10 @@ const resources = {
           { title: 'Silicon Valley Visit', desc: 'Exploring the latest frontiers of AI to bring direct innovation to your projects.' },
           { title: 'Core v2.0 Launch', desc: 'Our systems architecture is now 40% more efficient and scalable.' }
         ]
+      },
+      chat: {
+        welcome: 'Hello! I am El Ingeniero Loco\'s virtual assistant. How can I help you today?',
+        placeholder: 'Type your technological inquiry...'
       }
     }
   }

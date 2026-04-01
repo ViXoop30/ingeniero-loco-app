@@ -1,16 +1,26 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { 
   Terminal, Cpu, Zap, Layers, ArrowRight, Code2, Database, BrainCircuit, 
   ShoppingBag, Monitor, MessageSquare, Wrench, Clock, CheckCircle2, 
   Activity, Instagram, Facebook, Twitter, Youtube, ExternalLink, 
-  TrendingUp, Users, Globe 
+  TrendingUp, Users, Globe, ShoppingCart, ShieldCheck, Sparkles,
+  Lock, Award, BarChart3, Rocket, ChefHat, Store, Wine, GlassWater, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { getTimeline, TimelineEvent, cn, formatCurrency, getSettings, SiteSettings } from '../lib/data';
+import { getTimeline, TimelineEvent, cn, formatCurrency, getSettings, fetchSettings, SiteSettings, Industry, MatrixItem } from '../lib/data';
 import { DigitalRain, NeuralPulse, FloatingCode, Scanner, GlitchText } from '../components/WowEffect';
 import { PromoBanner } from '../components/PromoBanner';
+
+// Helper to render lucide icons by name
+const IconRenderer = ({ name, className }: { name: string, className?: string }) => {
+  const icons: any = {
+    ChefHat, Store, Wine, GlassWater, Zap, TrendingUp, Database, ShieldCheck, Globe, MessageSquare, Sparkles, Rocket, Award, Cpu, BrainCircuit
+  };
+  const Icon = icons[name] || Sparkles;
+  return <Icon className={className} />;
+};
 
 // Custom TikTok Icon
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -27,27 +37,121 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const IndustrySlider = ({ industries }: { industries: Industry[] }) => {
+    const { t } = useTranslation();
+    const [index, setIndex] = useState(0);
+
+    const next = () => setIndex((prev) => (prev + 1) % industries.length);
+    const prev = () => setIndex((prev) => (prev - 1 + industries.length) % industries.length);
+
+    if (!industries.length) return null;
+
+    return (
+        <div className="section-padding relative overflow-hidden" id="solutions">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+                <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
+                    <div>
+                        <div className="flex items-center space-x-3 text-accent font-mono text-[10px] tracking-[0.5em] mb-4 uppercase">
+                            <Sparkles className="w-4 h-4 animate-slow-pulse" />
+                            <span>{t('home.industries.tagline', 'SOLUCIONES VERTICALES')}</span>
+                        </div>
+                        <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter uppercase text-gradient leading-[0.85]">
+                            <Trans i18nKey="home.industries.title">MERCADOS <br/><span className="text-white/20">ESTRATÉGICOS</span></Trans>
+                        </h2>
+                    </div>
+                    <div className="flex gap-4">
+                        <button onClick={prev} className="p-4 glass-card border-white/10 hover:border-accent transition-all"><ChevronLeft /></button>
+                        <button onClick={next} className="p-4 glass-card border-white/10 hover:border-accent transition-all"><ChevronRight /></button>
+                    </div>
+                </div>
+
+                <div className="relative aspect-video w-full glass-card border-white/5 rounded-[4rem] overflow-hidden group shadow-[0_50px_100px_rgba(0,0,0,0.8)]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, scale: 0.9, x: 100 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 1.1, x: -100 }}
+                            transition={{ duration: 0.8, ease: "circOut" }}
+                            className="absolute inset-0 flex flex-col md:flex-row"
+                        >
+                            <div className="flex-1 p-12 md:p-24 flex flex-col justify-center bg-linear-to-r from-ink via-ink/90 to-transparent z-10">
+                                <IconRenderer name={industries[index].iconName} className={cn("w-20 h-20 mb-10", industries[index].color)} />
+                                <h3 className="text-5xl md:text-8xl font-black italic tracking-tighter uppercase text-white mb-6 leading-none">
+                                    {industries[index].title}
+                                </h3>
+                                <p className="text-xl md:text-3xl text-white/40 italic font-medium leading-relaxed mb-12 max-w-2xl">
+                                    {industries[index].desc}
+                                </p>
+                                <div className="flex items-center space-x-6">
+                                    <div className="px-6 py-2 bg-accent/10 border border-accent/30 rounded-full text-[10px] font-black italic text-accent uppercase tracking-widest">IA ORCHESTRATED</div>
+                                    <div className="px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black italic text-white/40 uppercase tracking-widest">VIBECODING ENABLED</div>
+                                </div>
+                            </div>
+                            <div className="flex-1 h-full relative">
+                                <img 
+                                    src={industries[index].img} 
+                                    alt={industries[index].title} 
+                                    className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000" 
+                                />
+                                <div className="absolute inset-0 bg-linear-to-r from-ink to-transparent" />
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TechMarquee = () => {
+    const techs = ["REACT", "NEXT.JS", "TYPESCRIPT", "PYTHON", "GROQ", "DOCKER", "AWS", "SUPABASE", "PRISMA", "TAILWIND", "FRAMER MOTION"];
+    return (
+        <div className="py-12 bg-white/[0.01] border-y border-white/5 overflow-hidden whitespace-nowrap relative">
+            <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-ink to-transparent z-10" />
+            <div className="absolute inset-y-0 right-0 w-32 bg-linear-to-l from-ink to-transparent z-10" />
+            <motion.div 
+                animate={{ x: [0, -1000] }}
+                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                className="inline-block"
+            >
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <span key={i}>
+                        {techs.map(t => (
+                            <span key={t} className="text-4xl md:text-6xl font-black italic tracking-tighter text-white/5 mx-12 border-b-4 border-accent/10">{t}</span>
+                        ))}
+                    </span>
+                ))}
+            </motion.div>
+        </div>
+    );
+};
+
 export default function Home() {
   const { t } = useTranslation();
-  const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getSettings());
+  const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    setTimeline(getTimeline());
-    setSettings(getSettings());
+    // Initial sync with server
+    const sync = async () => {
+        const [s, tl] = await Promise.all([
+           fetchSettings(),
+           getTimeline() 
+        ]);
+        setSettings(s);
+        setTimeline(tl);
+    };
+    sync();
   }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [0, 10]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
-
-  const whatsappUrl = "https://wa.me/56929871024";
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -150]);
 
   return (
     <motion.div
@@ -55,610 +159,351 @@ export default function Home() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="relative min-h-screen bg-black text-white selection:bg-accent selection:text-white pt-12"
+      className="relative min-h-screen bg-ink text-white selection:bg-accent selection:text-white pt-12 overflow-x-hidden"
     >
-      {/* Social Media Top Bar */}
+      <div className="noise-bg" />
+      
+      {/* Dynamic Navigation Top Bar */}
       {settings.showSocialIcons && (
-        <div className="absolute top-0 left-0 w-full h-12 bg-white/5 border-b border-white/10 flex items-center justify-between px-4 sm:px-8 z-40">
-          <div className="flex items-center space-x-4">
-            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest hidden sm:inline">{t('home.social_connect')}</span>
-            <div className="flex items-center space-x-3">
-              <a href="#" className="text-white/60 hover:text-accent transition-colors"><Instagram className="w-4 h-4" /></a>
-              <a href="#" className="text-white/60 hover:text-accent transition-colors"><TikTokIcon className="w-4 h-4" /></a>
-              <a href="#" className="text-white/60 hover:text-accent transition-colors"><Facebook className="w-4 h-4" /></a>
-              <a href="#" className="text-white/60 hover:text-accent transition-colors"><Twitter className="w-4 h-4" /></a>
+        <div className="fixed top-0 left-0 w-full h-12 glass-panel border-b border-white/5 flex items-center justify-between px-4 sm:px-12 z-50">
+          <div className="flex items-center space-x-8">
+            <span className="text-[10px] font-black italic text-white/20 uppercase tracking-[0.5em] hidden md:inline">SYSTEM STATUS: FULLY OPERATIONAL</span>
+            <div className="flex items-center space-x-5">
+              <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><Instagram className="w-4 h-4" /></a>
+              <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><TikTokIcon className="w-4 h-4" /></a>
+              <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><Facebook className="w-4 h-4" /></a>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-[10px] font-mono text-accent animate-pulse uppercase tracking-widest">{t('home.system_online')}</span>
-          </div>
+          <motion.div 
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="flex items-center space-x-3 px-4 py-1.5 bg-accent/5 border border-accent/20 rounded-full"
+          >
+            <div className="w-2 h-2 rounded-full bg-accent shadow-glow" />
+            <span className="text-[10px] font-black italic text-accent uppercase tracking-widest">{t('home.online', 'EN LÍNEA')}</span>
+          </motion.div>
         </div>
       )}
+
       <DigitalRain />
       <NeuralPulse />
       <FloatingCode />
       <Scanner />
       <PromoBanner />
 
-      {/* Background Elements for Parallax */}
-      <motion.div 
-        style={{ y: y1, opacity: 0.2 }}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
-      >
-        <div className="absolute top-20 left-10 w-64 h-64 bg-accent/20 blur-[100px] rounded-full" />
-        <div className="absolute bottom-40 right-10 w-96 h-96 bg-glow-blue/20 blur-[120px] rounded-full" />
-      </motion.div>
-
-      {/* Scanline Overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_2px,3px_100%] z-50 opacity-30" />
-
-      {/* Meeting Scheduler Section */}
-      <section className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Operational Active Status Bar */}
+      <div className="fixed bottom-24 right-8 z-[500] hidden lg:flex flex-col items-end space-y-4">
           <motion.div 
-            initial={{ y: 50, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            className="glass-card p-12 border-2 border-accent/30 relative overflow-hidden group"
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="glass-panel p-4 border-accent/20 rounded-2xl flex items-center gap-4 bg-black/60 shadow-glow"
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 blur-[80px] -z-10 group-hover:bg-accent/20 transition-colors" />
-            
-            <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-              <div className="flex-1 text-center md:text-left">
-                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-accent/20 text-accent text-[10px] font-black italic uppercase tracking-widest mb-6">
-                  <Zap className="w-3 h-3" />
-                  <span>{t('home.availability')}</span>
-                </div>
-                <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter mb-6 uppercase leading-none">
-                  {settings.hero.title}
-                </h2>
-                <p className="text-xl text-white/60 font-medium leading-relaxed max-w-2xl">
-                  {settings.hero.description}
-                </p>
-              </div>
-              
-              <div className="flex flex-col items-center gap-6">
-                <a 
-                  href={`https://wa.me/56929871024?text=${encodeURIComponent(t('home.hero_whatsapp_msg'))}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary flex items-center space-x-4 px-12 py-6 text-xl"
-                >
-                  <MessageSquare className="w-8 h-8" />
-                  <span>{t('home.hero_cta')}</span>
-                </a>
-                <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/40">
-                  {t('home.hero_sub')}
-                </p>
-              </div>
-            </div>
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-glow" />
+              <span className="text-[10px] font-black italic uppercase text-accent tracking-widest">
+                 Live: Orquestando Sistema CRM v2.4 (Cliente #92)
+              </span>
           </motion.div>
-        </div>
-      </section>
-      <section className="relative pt-24 pb-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+          <motion.div 
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="glass-panel p-4 border-white/5 rounded-2xl flex items-center gap-4 bg-black/60"
+          >
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-glow" />
+              <span className="text-[10px] font-black italic uppercase text-white/30 tracking-widest">
+                 Uptime Global: 99.98% [Cluster 7]
+              </span>
+          </motion.div>
+      </div>
+
+      {/* Authority Hero Section */}
+      <section className="relative pt-32 md:pt-56 pb-24 md:pb-48 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-32">
             <motion.div 
               style={{ y: y2 }}
-              className="flex-1 text-center lg:text-left"
+              className="flex-2 text-center lg:text-left"
             >
               <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-glow-blue text-[10px] font-mono tracking-[0.4em] uppercase mb-8"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="inline-flex items-center space-x-4 px-6 py-3 rounded-full bg-white/[0.03] border border-white/10 text-white/60 text-[11px] font-black italic uppercase tracking-[0.5em] mb-12 shadow-glow-blue"
               >
-                <Zap className="w-4 h-4 animate-pulse text-accent" />
-                <span>{t('home.active_systems')}</span>
+                <Award className="w-4 h-4 text-accent" />
+                <span>{t('home.hero_availability', 'PARTNER ESTRATÉGICO DE CRECIMIENTO')}</span>
               </motion.div>
               
               <motion.h1
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.8] mb-6 italic text-gradient uppercase"
+                transition={{ duration: 1, ease: "circOut" }}
+                className="text-6xl sm:text-8xl md:text-[10rem] font-black tracking-tighter leading-[0.9] mb-10 italic text-gradient uppercase"
               >
-                <GlitchText text={t('home.work_order')} />
+                <GlitchText text={settings.hero.title.split(' ').slice(0, 1).join('')} />
+                <br />
+                <span className="text-white/10" dangerouslySetInnerHTML={{ __html: settings.hero.title.split(' ').slice(1).join(' ') }} />
               </motion.h1>
               
-              <motion.h2
-                initial={{ y: 20, opacity: 0 }}
+              <motion.p
+                initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-4xl md:text-6xl font-black italic tracking-tight text-white mb-8 opacity-90 uppercase"
+                className="max-w-2xl text-xl md:text-3xl text-white/40 mb-16 mx-auto lg:mx-0 leading-relaxed font-medium italic"
               >
-                {t('brand.name')}
-              </motion.h2>
-              
-              <motion.p
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="max-w-lg text-xl text-white/60 mb-12 mx-auto lg:mx-0 leading-relaxed font-medium"
-              >
-                {t('home.support_desc')}
+                {settings.hero.description}
               </motion.p>
               
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center lg:justify-start mb-12"
-              >
+              <div className="flex flex-col sm:flex-row space-y-8 sm:space-y-0 sm:space-x-12 justify-center lg:justify-start items-center">
                 <a 
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary flex items-center justify-center space-x-4 group text-lg"
+                  href={`https://wa.me/56929871024?text=${encodeURIComponent(t('home.hero_whatsapp_msg'))}`}
+                  className="btn-premium px-16 py-8 text-xl group w-full sm:w-auto shadow-[0_30px_80px_rgba(255,140,0,0.4)]"
                 >
-                  <MessageSquare className="w-6 h-6" />
-                  <span>{t('home.whatsapp')}</span>
+                  <Rocket className="w-7 h-7 group-hover:rotate-45 group-hover:-translate-y-2 transition-all duration-500" />
+                  <span>{settings.hero.cta}</span>
                 </a>
-                <Link to="/store" className="glass-card px-10 py-5 flex items-center justify-center space-x-3 hover:bg-white/10 transition-all font-black italic uppercase tracking-tighter border-2 border-white/20 hover:border-accent/50">
-                  <ShoppingBag className="w-6 h-6" />
-                  <span>{t('home.catalog')}</span>
-                </Link>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="flex items-center justify-center lg:justify-start space-x-6"
-              >
-                <div className="flex items-center space-x-3 text-accent font-black italic text-3xl">
-                  <div className="w-12 h-12 rounded-xl bg-green-500/20 border border-green-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                    <MessageSquare className="w-7 h-7 text-green-400" />
+                <div className="flex flex-col items-center sm:items-start space-y-4">
+                  <div className="flex -space-x-4">
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} className="w-12 h-12 rounded-full border-4 border-ink bg-white/10 flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all">
+                        <img src={`https://i.pravatar.cc/150?u=v${i}`} alt="Client" />
+                      </div>
+                    ))}
+                    <div className="w-12 h-12 rounded-full border-4 border-ink bg-accent flex items-center justify-center text-[11px] font-black">+24</div>
                   </div>
-                  <span className="tracking-tighter">+569 29871024</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                    <p className="text-[11px] font-black italic uppercase tracking-widest text-accent">{settings.hero.subtitle}</p>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
 
-            {/* The "Digital Core" - AI Orchestrator Visual */}
-            <motion.div
-              style={{ y: y1, rotate, scale }}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-              className="flex-1 relative max-w-md"
+            <motion.div 
+               style={{ scale: 1.1 }}
+               className="flex-1 w-full max-w-xl relative group"
             >
-              <div className="relative z-10 rounded-[3rem] border-8 border-white/10 p-4 bg-linear-to-b from-white/5 to-transparent backdrop-blur-xl shadow-2xl">
-                <div className="rounded-[2.5rem] overflow-hidden border-4 border-accent/30 shadow-[0_0_80px_rgba(255,140,0,0.4)] aspect-square relative bg-black">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(242,125,38,0.2)_0%,transparent_70%)]" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      animate={{
-                        rotate: 360,
-                        scale: [1, 1.1, 1],
-                      }}
-                      transition={{
-                        rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                        scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                      }}
-                      className="w-64 h-64 border-2 border-accent/20 rounded-full flex items-center justify-center"
-                    >
-                      <motion.div
-                        animate={{
-                          rotate: -360,
-                          scale: [1.1, 1, 1.1],
-                        }}
-                        transition={{
-                          rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-                          scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                        }}
-                        className="w-48 h-48 border-2 border-glow-blue/20 rounded-full flex items-center justify-center"
-                      >
-                        <BrainCircuit className="w-24 h-24 text-accent animate-pulse" />
-                      </motion.div>
-                    </motion.div>
-                  </div>
-                  
-                  {/* Floating Data Bits */}
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{
-                        y: [0, -40, 0],
-                        opacity: [0.2, 0.6, 0.2],
-                      }}
-                      transition={{
-                        duration: 3 + i,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: i * 0.5,
-                      }}
-                      className="absolute w-1 h-1 bg-accent rounded-full"
-                      style={{
-                        top: `${10 + i * 8}%`,
-                        left: `${5 + i * 10}%`,
-                      }}
-                    />
-                  ))}
-                  <div className="absolute inset-0 bg-linear-to-t from-[#020617] via-transparent to-transparent opacity-60" />
-                </div>
-                
-                {/* Floating Icons with enhanced animations */}
-                <motion.div 
-                  animate={{ y: [0, -20, 0], rotate: [12, 25, 12] }} 
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-6 -right-6 w-24 h-24 glass-card flex items-center justify-center glow-border-orange rotate-12 z-20"
-                >
-                  <Wrench className="text-accent w-12 h-12 drop-shadow-[0_0_10px_rgba(255,140,0,0.5)]" />
-                </motion.div>
-                
-                <motion.div 
-                  animate={{ y: [0, 20, 0], rotate: [-12, -25, -12] }} 
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -bottom-6 -left-6 w-24 h-24 glass-card flex items-center justify-center glow-border-blue -rotate-12 z-20"
-                >
-                  <Cpu className="text-glow-blue w-12 h-12 drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]" />
-                </motion.div>
-
-                {/* Status Badge */}
-                <div className="absolute -bottom-4 right-10 bg-accent text-white font-black italic px-4 py-2 rounded-lg text-xs tracking-widest shadow-xl z-30">
-                  {t('home.online')}
-                </div>
-              </div>
-              
-              {/* Background Glows */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-accent/10 blur-[120px] -z-10 rounded-full" />
-              <div className="absolute top-0 right-0 w-64 h-64 bg-glow-blue/10 blur-[100px] -z-10 rounded-full" />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Project Timeline Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
-            <div className="max-w-2xl">
-              <div className="flex items-center space-x-2 text-glow-blue font-mono text-[10px] tracking-[0.4em] uppercase mb-4">
-                <Clock className="w-4 h-4" />
-                <span>{t('home.timeline_status')}</span>
-              </div>
-              <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter leading-none uppercase">
-                <Trans i18nKey="home.timeline_title">
-                  LÍNEA DE <span className="text-gradient">PRODUCCIÓN</span>
-                </Trans>
-              </h2>
-              <p className="text-lg text-white/40 mt-6 font-medium leading-relaxed">
-                {t('home.timeline_desc')}
-              </p>
-            </div>
-            <div className="hidden md:block">
-              <div className="flex items-center space-x-4 px-6 py-3 glass-card border-white/10">
-                <Activity className="w-5 h-5 text-accent animate-pulse" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-white/60">{t('home.executing')}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative">
-            {/* Vertical Line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-accent via-glow-blue to-transparent opacity-20 hidden md:block" />
-            
-            <div className="space-y-12">
-              {timeline.map((event, i) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  className={cn(
-                    "relative flex flex-col md:flex-row items-center gap-8 md:gap-0",
-                    i % 2 === 0 ? "md:flex-row-reverse" : ""
-                  )}
-                >
-                  {/* Content Card */}
-                  <div className="w-full md:w-[45%]">
-                    <div className={cn(
-                      "glass-card p-8 border-2 transition-all hover:scale-[1.02]",
-                      event.status === 'completed' ? "glow-border-blue border-green-500/20" :
-                      event.status === 'in-progress' ? "glow-border-orange border-accent/20" : "border-white/5"
-                    )}>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">{event.date}</span>
-                        <div className={cn(
-                          "flex items-center space-x-2 px-3 py-1 rounded-full text-[8px] font-black uppercase italic tracking-widest",
-                          event.status === 'completed' ? "bg-green-500/10 text-green-400 border border-green-500/20" :
-                          event.status === 'in-progress' ? "bg-accent/10 text-accent border border-accent/20" : "bg-white/5 text-white/40 border border-white/10"
-                        )}>
-                          {event.status === 'completed' && <CheckCircle2 className="w-3 h-3" />}
-                          {event.status === 'in-progress' && <Activity className="w-3 h-3 animate-spin" />}
-                          <span>{t(`admin.status_${event.status.replace('-', '_')}`)}</span>
+                <div className="absolute inset-0 bg-accent/30 blur-[180px] rounded-full animate-slow-pulse -z-10" />
+                <div className="glass-card p-2 border-white/5 rounded-[5rem] overflow-hidden shadow-glow">
+                    <div className="relative aspect-square rounded-[4.8rem] overflow-hidden bg-black/80 flex items-center justify-center border-4 border-white/10">
+                        <DigitalRain />
+                        <motion.div
+                            animate={{ rotate: -360 }}
+                            transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-0 opacity-10 border-[60px] border-dashed border-accent/20 rounded-full"
+                        />
+                        <div className="relative z-10 text-center scale-125">
+                            <BrainCircuit className="w-40 h-40 text-accent mx-auto mb-8 drop-shadow-[0_0_40px_rgba(255,140,0,1)]" />
+                            <div className="space-y-2">
+                                <div className="text-7xl font-black italic text-white tracking-widest leading-none">NUCLEUS</div>
+                                <div className="text-[12px] font-mono text-accent uppercase tracking-[1em]">V2.0 ALPHA</div>
+                            </div>
                         </div>
-                      </div>
-                      <h3 className="text-2xl font-black italic tracking-tighter mb-4 uppercase">{event.title}</h3>
-                      <p className="text-sm text-white/60 leading-relaxed mb-6">{event.description}</p>
-                      <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-accent">
-                        <Terminal className="w-3 h-3" />
-                        <span>{event.category}</span>
-                      </div>
+                        {/* Live Log - Enhanced */}
+                        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-full px-16">
+                            <div className="glass-panel p-6 border-white/10 rounded-[2rem] bg-black/60 font-mono text-[10px] text-accent/80 uppercase shadow-2xl">
+                                <div className="flex justify-between mb-3 items-center">
+                                    <span className="flex items-center gap-2"><Cpu className="w-3 h-3 animate-spin"/> Processing...</span>
+                                    <span className="text-white font-black">STABLE</span>
+                                </div>
+                                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div 
+                                        animate={{ width: ["10%", "95%", "80%", "100%", "20%"] }}
+                                        transition={{ duration: 15, repeat: Infinity }}
+                                        className="h-full bg-linear-to-r from-accent to-glow-blue shadow-glow"
+                                    />
+                                </div>
+                                <div className="mt-3 text-[8px] opacity-30">ARCH: X86_64 NEURAL CLUSTER [OK]</div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-
-                  {/* Center Node */}
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#020617] border-2 border-white/10 flex items-center justify-center z-10 hidden md:flex">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full shadow-[0_0_15px_currentColor]",
-                      event.status === 'completed' ? "bg-green-500 text-green-500" :
-                      event.status === 'in-progress' ? "bg-accent text-accent animate-pulse" : "bg-white/20 text-white/20"
-                    )} />
-                  </div>
-
-                  {/* Spacer for the other side */}
-                  <div className="hidden md:block w-[45%]" />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Expertise Section */}
-      <section className="py-24 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: BrainCircuit, title: t('home.services.ia.title'), desc: t('home.services.ia.desc'), color: "orange" },
-              { icon: Layers, title: t('home.services.orch.title'), desc: t('home.services.orch.desc'), color: "blue" },
-              { icon: Database, title: t('home.services.data.title'), desc: t('home.services.data.desc'), color: "orange" },
-              { icon: Code2, title: t('home.services.dev.title'), desc: t('home.services.dev.desc'), color: "blue" }
-            ].map((service, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ y: -5 }}
-                className={`p-8 glass-card ${service.color === 'orange' ? 'glow-border-orange' : 'glow-border-blue'} group`}
-              >
-                <service.icon className={`w-12 h-12 ${service.color === 'orange' ? 'text-accent' : 'text-glow-blue'} mb-6 group-hover:scale-110 transition-transform`} />
-                <h3 className="text-xl font-black mb-4 italic">{service.title}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">{service.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* System Terminal Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="glass-card p-1 border-accent/20 bg-black/80 shadow-2xl"
-          >
-            <div className="flex items-center space-x-2 px-4 py-2 border-b border-white/10 bg-white/5">
-              <div className="w-3 h-3 rounded-full bg-red-500/50" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-              <div className="w-3 h-3 rounded-full bg-green-500/50" />
-              <span className="text-[10px] font-mono text-white/40 ml-4 uppercase tracking-widest">system_orchestrator.sh</span>
-            </div>
-            <div className="p-6 font-mono text-sm md:text-base min-h-[200px]">
-              <div className="flex items-center space-x-2 text-accent mb-2">
-                <span>$</span>
-                <div className="relative inline-block">
-                  <motion.span
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "100%" }}
-                    transition={{ duration: 1.5, ease: "linear" }}
-                    className="overflow-hidden whitespace-nowrap inline-block border-r-2 border-accent animate-blink"
-                  >
-                    {t('home.terminal.init')}
-                  </motion.span>
                 </div>
-              </div>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.4,
-                      delayChildren: 1.5
-                    }
-                  }
-                }}
-                className="space-y-1 text-white/60"
-              >
-                {[
-                  { text: t('home.terminal.load_ai'), color: "text-green-400" },
-                  { text: t('home.terminal.connect_db'), color: "text-green-400" },
-                  { text: t('home.terminal.optimize_ui'), color: "text-green-400" },
-                  { text: ` >> ${t('home.terminal.ready')}`, color: "text-glow-blue animate-pulse mt-4" }
-                ].map((line, idx) => (
-                  <motion.p
-                    key={idx}
-                    variants={{
-                      hidden: { opacity: 0, x: -10 },
-                      visible: { opacity: 1, x: 0 }
-                    }}
-                    className={line.color}
-                  >
-                    {line.text}
-                  </motion.p>
-                ))}
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Story Section */}
-      <section className="py-24 relative overflow-hidden bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="aspect-square rounded-2xl overflow-hidden border border-accent/20 relative group">
-                <img 
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop" 
-                  alt="Our Journey" 
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                <div className="absolute bottom-8 left-8">
-                  <div className="text-6xl font-black text-accent italic tracking-tighter">10+</div>
-                  <div className="text-xs font-mono uppercase tracking-[0.3em] text-white/60">{t('story.subtitle')}</div>
-                </div>
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-accent/30" />
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-accent/30" />
             </motion.div>
+          </div>
+        </div>
+      </section>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-5xl font-black tracking-tighter italic mb-8">
-                {settings.story.title}
-              </h2>
-              <p className="text-xl text-white/70 leading-relaxed mb-8 font-light italic">
-                {settings.story.content}
+      <TechMarquee />
+
+      {/* VibeCoding & AI Orchestration Intro Section */}
+      <section className="section-padding relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 text-center mb-32">
+              <div className="inline-flex items-center gap-4 px-6 py-2 glass-panel border-white/10 rounded-full mb-12">
+                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                   <span className="text-[10px] font-black italic text-white/50 uppercase tracking-[0.4em]">{settings.vibecoding.tagline}</span>
+              </div>
+              <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter uppercase text-gradient leading-[0.9] mb-12" dangerouslySetInnerHTML={{ __html: settings.vibecoding.title }} />
+              <p className="max-w-4xl mx-auto text-xl md:text-3xl text-white/40 italic font-medium leading-relaxed">
+                  {settings.vibecoding.desc}
               </p>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-                  <TrendingUp className="w-8 h-8 text-accent mb-4" />
-                  <div className="text-xs font-mono uppercase tracking-widest text-white/40 mb-2">{t('story.growth')}</div>
-                  <div className="text-2xl font-black italic tracking-tighter">+500%</div>
-                </div>
-                <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-                  <Users className="w-8 h-8 text-accent mb-4" />
-                  <div className="text-xs font-mono uppercase tracking-widest text-white/40 mb-2">{t('home.clients')}</div>
-                  <div className="text-2xl font-black italic tracking-tighter">250+</div>
-                </div>
-              </div>
-            </motion.div>
           </div>
-        </div>
       </section>
 
-      {/* News & Marketing Section */}
-      <section className="py-24 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-            <div className="max-w-2xl">
-              <h2 className="text-5xl font-black tracking-tighter italic mb-4">
-                {settings.news.title}
-              </h2>
-              <p className="text-white/40 font-mono text-xs uppercase tracking-[0.3em]">{settings.news.subtitle}</p>
-            </div>
-            <div className="flex space-x-4">
-              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:border-accent transition-colors cursor-pointer">
-                <ArrowRight className="w-5 h-5 rotate-180" />
-              </div>
-              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:border-accent transition-colors cursor-pointer">
-                <ArrowRight className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
+      {/* industry Showcase Slider */}
+      <IndustrySlider industries={settings.industries} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Marketing Highlight Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="lg:col-span-1 p-8 bg-accent rounded-2xl text-white relative overflow-hidden group"
-            >
-              <div className="relative z-10">
-                <Globe className="w-12 h-12 mb-6" />
-                <h3 className="text-3xl font-black italic tracking-tighter mb-4 uppercase">{t('news.marketing_title')}</h3>
-                <p className="text-white/80 mb-8 leading-relaxed">
-                  {t('news.marketing_desc')}
-                </p>
-                <button className="flex items-center space-x-2 font-black italic uppercase tracking-tighter border-b-2 border-white pb-1 hover:space-x-4 transition-all">
-                  <span>{t('home.learn_more')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-            </motion.div>
-
-            {/* News Items */}
-            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-              {settings.news.items.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/[0.08] transition-all group"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="text-[10px] font-mono text-accent uppercase tracking-widest">0{i+1} / 2026</div>
-                    <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-accent transition-colors" />
+      {/* Critical Needs & Technical Solutions Matrix */}
+      <section className="section-padding bg-white/[0.01] border-y border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+              <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+                  <div className="max-w-4xl">
+                      <h2 className="text-6xl md:text-[10rem] font-black italic tracking-tighter leading-[0.8] uppercase text-gradient" dangerouslySetInnerHTML={{ __html: settings.needs.title }} />
                   </div>
-                  <h4 className="text-xl font-black italic tracking-tighter mb-3 uppercase group-hover:text-accent transition-colors">
-                    {item.title}
-                  </h4>
-                  <p className="text-sm text-white/50 leading-relaxed">
-                    {item.desc}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
+                  <div className="text-right">
+                      <p className="text-[12px] font-black italic uppercase text-accent tracking-[0.4em] animate-pulse mb-2">{settings.needs.subtitle}</p>
+                      <p className="text-xl text-white/30 italic">{settings.needs.desc}</p>
+                  </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                  {settings.matrix.map((item, i) => (
+                      <motion.div 
+                        key={i}
+                        whileHover={{ y: -10 }}
+                        className="glass-panel p-10 border-white/5 rounded-[3rem] hover:border-accent/40 transition-all group"
+                      >
+                          <div className="flex items-center gap-6 mb-8">
+                             <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-accent transition-colors shadow-glow">
+                                <IconRenderer name={item.iconName} className="w-7 h-7 text-white" />
+                             </div>
+                             <div className="text-[10px] font-mono text-accent uppercase tracking-widest">{item.solution}</div>
+                          </div>
+                          <h4 className="text-2xl font-black italic tracking-tighter text-white/30 mb-4">{item.problem}</h4>
+                          <p className="text-xl font-black italic tracking-tighter text-white mb-6 uppercase leading-tight">{item.impact}</p>
+                          <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: "0%" }}
+                                whileInView={{ width: "100%" }}
+                                transition={{ duration: 2, delay: i*0.2 }}
+                                className="h-full bg-accent"
+                              />
+                          </div>
+                      </motion.div>
+                  ))}
+              </div>
           </div>
+      </section>
+
+      {/* Operational Pulse (Timeline) Section */}
+      {timeline.length > 0 && (
+        <section className="section-padding relative overflow-hidden" id="timeline">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+                <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+                    <div className="max-w-4xl">
+                        <div className="flex items-center space-x-3 text-accent font-mono text-[10px] tracking-[0.5em] mb-4 uppercase">
+                            <Clock className="w-4 h-4" />
+                            <span>{t('home.timeline_tagline', 'HISTORIAL DE ORQUESTACIÓN')}</span>
+                        </div>
+                        <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none uppercase text-gradient">PULSO <br/>OPERACIONAL</h2>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-12 relative">
+                    {/* Neural Line */}
+                    <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-linear-to-b from-accent/0 via-accent/40 to-accent/0 hidden lg:block" />
+                    
+                    {timeline.map((event, i) => (
+                        <motion.div 
+                            key={event.id}
+                            initial={{ opacity: 0, x: i % 2 === 0 ? -100 : 100 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            className={cn(
+                                "flex flex-col lg:flex-row items-center gap-12",
+                                i % 2 !== 0 && "lg:flex-row-reverse"
+                            )}
+                        >
+                            <div className="flex-1 w-full lg:text-right">
+                                {i % 2 === 0 && (
+                                    <div className="space-y-4">
+                                        <div className="text-4xl font-black italic tracking-tighter text-white">{event.title}</div>
+                                        <p className="text-xl text-white/30 italic font-medium leading-relaxed">{event.description}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="relative z-10">
+                                <div className="w-16 h-16 bg-ink border-4 border-white/10 rounded-2xl flex items-center justify-center shadow-glow group hover:border-accent transition-all">
+                                    <Zap className="w-6 h-6 text-accent" />
+                                </div>
+                                <div className="absolute top-20 left-1/2 -translate-x-1/2 text-[10px] font-mono text-accent whitespace-nowrap hidden lg:block uppercase tracking-widest">{event.date}</div>
+                            </div>
+
+                            <div className="flex-1 w-full lg:text-left">
+                                {i % 2 !== 0 && (
+                                    <div className="space-y-4">
+                                        <div className="text-4xl font-black italic tracking-tighter text-white">{event.title}</div>
+                                        <p className="text-xl text-white/30 italic font-medium leading-relaxed">{event.description}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+      )}
+
+      {/* Trust & Guarantee Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+                { icon: ShieldCheck, title: t('home.box_stability_title', 'Sistemas Blindados'), desc: t('home.box_stability_desc', 'Arquitectura redundante con 99.9% de uptime garantizado.') },
+                { icon: Lock, title: t('home.box_privacy_title', 'Privacidad Total'), desc: t('home.box_privacy_desc', 'Protocolos de confidencialidad absoluta sobre tus datos de negocio.') },
+                { icon: BarChart3, title: t('home.box_roi_title', 'ROI Optimizado'), desc: t('home.box_roi_desc', 'Cada línea de código está diseñada para generar beneficios directos.') }
+            ].map((box, i) => (
+                <motion.div 
+                    key={i}
+                    whileHover={{ scale: 1.02 }}
+                    className="flex flex-col items-center text-center p-8 glass-panel border-white/5 rounded-[2.5rem]"
+                >
+                    <box.icon className="w-12 h-12 text-accent mb-6 drop-shadow-glow" />
+                    <h4 className="text-xl font-black italic uppercase tracking-tighter mb-4">{box.title}</h4>
+                    <p className="text-sm text-white/30 italic font-medium">{box.desc}</p>
+                </motion.div>
+            ))}
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-24 bg-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="text-5xl font-black tracking-tighter italic">
-                <Trans 
-                  i18nKey="home.featured"
-                  components={{
-                    br: <br />,
-                    span: <span className="text-gradient" />
-                  }}
-                >
-                  PRODUCTOS <br /><span className="text-gradient">DESTACADOS</span>
-                </Trans>
-              </h2>
-            </div>
-            <Link to="/store" className="text-xs font-mono tracking-widest border-b border-accent/40 pb-1 hover:text-accent hover:border-accent transition-colors text-white/60">
-              {t('home.view_all')}
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: "POS System", type: "Software", price: 299000, img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop" },
-              { name: "Sales Page", type: "Web", price: 450000, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop" },
-              { name: "WP Bundle", type: "CMS", price: 150000, img: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=800&auto=format&fit=crop" }
-            ].map((item, i) => (
-              <div key={i} className="brutalist-card glow-border-orange group">
-                <div className="aspect-video bg-ink mb-6 overflow-hidden rounded-lg border border-white/10">
-                  <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-                </div>
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-black text-2xl italic tracking-tighter">{item.name}</h3>
-                  <span className="font-mono text-[10px] bg-accent text-white px-2 py-1 rounded">{item.type}</span>
-                </div>
-                <p className="text-white/60 text-sm mb-6">{t('home.product_desc')}</p>
-                <div className="flex justify-between items-center">
-                  <span className="font-mono font-black text-accent text-xl">{formatCurrency(item.price)}</span>
-                  <button className="text-xs font-black italic uppercase tracking-tighter hover:text-accent transition-colors">{t('home.details')}</button>
-                </div>
+      {/* Cyber Footer */}
+      <footer className="py-32 border-t border-white/5 relative z-10 glass-panel mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-24">
+            <div className="max-w-xl">
+              <div className="text-6xl font-black italic tracking-tighter uppercase text-gradient mb-8 leading-none">{t('brand.name')}</div>
+              <p className="text-xl text-white/30 font-medium italic mb-12">{settings.footer.description}</p>
+              <div className="flex gap-10">
+                <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><Instagram size={28} /></a>
+                <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><TikTokIcon size={28} /></a>
+                <a href="#" className="text-white/20 hover:text-accent transition-all hover:scale-125"><Facebook size={28} /></a>
               </div>
-            ))}
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-16 lg:gap-32">
+                <div>
+                   <h5 className="text-[12px] font-black italic uppercase text-accent mb-8 tracking-widest">{t('home.work_order')}</h5>
+                   <ul className="space-y-4 text-white/40 text-sm font-black italic uppercase tracking-tighter">
+                       <li className="hover:text-white cursor-pointer transition-colors" onClick={() => window.scrollTo(0,0)}>{t('nav.home')}</li>
+                       <li className="hover:text-white cursor-pointer transition-colors"><Link to="/store">{t('nav.store')}</Link></li>
+                   </ul>
+                </div>
+                <div>
+                   <h5 className="text-[12px] font-black italic uppercase text-accent mb-8 tracking-widest">LEGAL</h5>
+                   <ul className="space-y-4 text-white/40 text-sm font-black italic uppercase tracking-tighter">
+                       <li className="hover:text-white cursor-pointer transition-colors"><Link to="/privacy">{t('nav.privacy')}</Link></li>
+                       <li className="hover:text-white cursor-pointer transition-colors">{t('home.security', 'Seguridad')}</li>
+                   </ul>
+                </div>
+            </div>
+          </div>
+          <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-[11px] font-mono uppercase tracking-[0.8em] text-white/10">
+              &copy; 2026 {t('brand.name').toUpperCase()}. {t('footer.industrial_secured', 'INDUSTRIAL PERFORMANCE SECURED.')}
+            </p>
+            <div className="flex items-center gap-4 px-6 py-2 glass-panel border-white/10 rounded-full">
+                 <ShieldCheck className="w-4 h-4 text-accent" />
+                 <span className="text-[9px] font-black italic uppercase text-white/30 tracking-[0.2em]">SSL: AES-256 ENCRYPTED</span>
+            </div>
           </div>
         </div>
-      </section>
+      </footer>
     </motion.div>
   );
 }

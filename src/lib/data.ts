@@ -32,166 +32,186 @@ export interface TimelineEvent {
   category: string;
 }
 
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'POS System Pro',
-    description: 'Sistema de punto de venta inteligente con gestión de inventario y reportes en tiempo real.',
-    price: 299000,
-    category: 'software',
-    image: 'https://picsum.photos/seed/pos/800/600',
-    features: ['Inventario', 'Reportes', 'Multi-usuario']
-  },
-  {
-    id: '2',
-    name: 'E-commerce Master',
-    description: 'Página de ventas optimizada para conversión con pasarela de pagos integrada.',
-    price: 450000,
-    category: 'website',
-    image: 'https://picsum.photos/seed/shop/800/600',
-    features: ['SEO Ready', 'Pagos Online', 'Responsive']
-  },
-  {
-    id: '3',
-    name: 'WordPress Custom Bundle',
-    description: 'Instalación y personalización completa de WordPress con temas premium.',
-    price: 150000,
-    category: 'software',
-    image: 'https://picsum.photos/seed/wp/800/600',
-    features: ['Plugins Premium', 'Seguridad', 'Soporte']
-  }
-];
+export interface Industry {
+  id: string;
+  title: string;
+  desc: string;
+  img: string;
+  color: string;
+  iconName: string;
+}
 
-const INITIAL_TIMELINE: TimelineEvent[] = [
-  {
-    id: '1',
-    title: 'Sistema de Gestión K1',
-    description: 'Implementación de arquitectura de datos para optimización de procesos industriales.',
-    date: '2024-03-20',
-    status: 'completed',
-    category: 'Industrial'
-  },
-  {
-    id: '2',
-    title: 'Orchestrator Core v2',
-    description: 'Desarrollo de motor de automatización autónoma para servicios en la nube.',
-    date: '2024-03-25',
-    status: 'in-progress',
-    category: 'Cloud'
-  },
-  {
-    id: '3',
-    title: 'Portal de Clientes Inteligente',
-    description: 'Interfaz de usuario reactiva con integración de IA para soporte técnico.',
-    date: '2024-04-05',
-    status: 'planned',
-    category: 'Web'
-  }
-];
+export interface MatrixItem {
+  problem: string;
+  solution: string;
+  impact: string;
+  iconName: string;
+}
 
 export interface SiteSettings {
   showSocialIcons: boolean;
   hero: {
     title: string;
     description: string;
+    cta: string;
+    subtitle: string;
   };
-  story: {
+  vibecoding: {
+    tagline: string;
     title: string;
-    content: string;
+    desc: string;
   };
-  news: {
+  industries: Industry[];
+  needs: {
     title: string;
     subtitle: string;
-    items: { title: string; desc: string }[];
+    desc: string;
   };
+  matrix: MatrixItem[];
   footer: {
     description: string;
   };
 }
 
 const INITIAL_SETTINGS: SiteSettings = {
-  showSocialIcons: false,
+  showSocialIcons: true,
   hero: {
-    title: '¿Necesitas una Solución Real para tu Negocio?',
-    description: 'Orquestamos sistemas inteligentes y arquitectura de software de alto nivel para escalar tu empresa al siguiente núcleo tecnológico.'
+    title: '¿Necesitas Escalar tu Facturación?',
+    description: 'Orquestamos la arquitectura técnica de élite que tu negocio necesita para automatizar procesos y maximizar el ROI. Cupos limitados para auditoría este mes.',
+    cta: 'RESERVAR SESIÓN ESTRATÉGICA',
+    subtitle: 'Solo 2 espacios disponibles para proyectos nuevos'
   },
-  story: {
-    title: 'NUESTRA HISTORIA',
-    content: 'Desde nuestros inicios, nos hemos dedicado a orquestar soluciones que desafían lo convencional. Con más de una década en la industria, hemos evolucionado de un pequeño taller de ideas a un núcleo de innovación tecnológica, ayudando a cientos de empresas a escalar mediante sistemas inteligentes y automatización de alto nivel.'
+  vibecoding: {
+    tagline: 'ORQUESTRACIÓN CON VIBECODING',
+    title: 'CONSTRUIMOS A LA VELOCIDAD DE TU NEGOCIO',
+    desc: 'Utilizamos Inteligencia Artificial de Grado Industrial y la metodología VibeCoding para orquestar sistemas complejos en tiempo récord. No escribimos código; orquestamos resultados.'
   },
-  news: {
-    title: 'ÚLTIMAS NOTICIAS',
-    subtitle: 'ACTUALIZACIONES DEL SISTEMA',
-    items: [
-      { title: 'Nueva Alianza Estratégica', desc: 'Nos asociamos con líderes en marketing digital para potenciar el alcance de nuestros clientes.' },
-      { title: 'Visita a Silicon Valley', desc: 'Explorando las últimas fronteras de la IA para traer innovación directa a tus proyectos.' },
-      { title: 'Lanzamiento de Core v2.0', desc: 'Nuestra arquitectura de sistemas ahora es un 40% más eficiente y escalable.' }
-    ]
+  industries: [],
+  needs: {
+    title: 'TU NECESIDAD NUESTRA SOLUCIÓN',
+    subtitle: 'Análisis de Impacto en Tiempo Real',
+    desc: 'Eliminamos la fricción técnica para acelerar el crecimiento.'
   },
+  matrix: [],
   footer: {
-    description: 'Orquestando el futuro de la tecnología mediante sistemas inteligentes y arquitectura de software de alto nivel. Tu éxito es nuestro código.'
+    description: 'Ingeniero Orquestador y Creador de Sistemas Inteligentes. Especializado en la automatización de procesos complejos y el desarrollo de arquitecturas autónomas de alto impacto.'
   }
 };
 
+// MODERATED SYNC FALLBACK + ASYNC PERSISTENCE
 export function getSettings(): SiteSettings {
   const stored = localStorage.getItem('site_settings');
-  if (!stored) {
-    localStorage.setItem('site_settings', JSON.stringify(INITIAL_SETTINGS));
-    return INITIAL_SETTINGS;
-  }
-  return JSON.parse(stored);
+  if (!stored) return INITIAL_SETTINGS;
+  return { ...INITIAL_SETTINGS, ...JSON.parse(stored) };
 }
 
-export function saveSettings(settings: SiteSettings) {
+export async function fetchSettings(): Promise<SiteSettings> {
+    try {
+        const res = await fetch('/api/cms/settings');
+        const data = await res.json();
+        if (data && Object.keys(data).length) {
+            localStorage.setItem('site_settings', JSON.stringify(data));
+            return data;
+        }
+    } catch(e) {}
+    return getSettings();
+}
+
+export async function saveSettings(settings: SiteSettings) {
   localStorage.setItem('site_settings', JSON.stringify(settings));
+  try {
+      await fetch('/api/cms/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+      });
+  } catch(e) {}
 }
 
 export function getProducts(): Product[] {
   const stored = localStorage.getItem('products');
-  if (!stored) {
-    localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS));
-    return INITIAL_PRODUCTS;
-  }
-  return JSON.parse(stored);
+  return stored ? JSON.parse(stored) : [];
 }
 
-export function saveProduct(product: Product) {
+export async function fetchProducts(): Promise<Product[]> {
+    try {
+        const res = await fetch('/api/cms/products');
+        const data = await res.json();
+        if (data) {
+            localStorage.setItem('products', JSON.stringify(data));
+            return data;
+        }
+    } catch(e) {}
+    return getProducts();
+}
+
+export async function saveProduct(product: Product) {
   const products = getProducts();
   const index = products.findIndex(p => p.id === product.id);
-  if (index >= 0) {
-    products[index] = product;
-  } else {
-    products.push(product);
-  }
+  if (index >= 0) products[index] = product;
+  else products.push(product);
   localStorage.setItem('products', JSON.stringify(products));
+  try {
+      await fetch('/api/cms/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(products)
+      });
+  } catch(e) {}
 }
 
-export function deleteProduct(id: string) {
+export async function deleteProduct(id: string) {
   const products = getProducts().filter(p => p.id !== id);
   localStorage.setItem('products', JSON.stringify(products));
+  try {
+      await fetch('/api/cms/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(products)
+      });
+  } catch(e) {}
 }
 
 export function getTimeline(): TimelineEvent[] {
   const stored = localStorage.getItem('timeline');
-  if (!stored) {
-    localStorage.setItem('timeline', JSON.stringify(INITIAL_TIMELINE));
-    return INITIAL_TIMELINE;
-  }
-  return JSON.parse(stored);
+  return stored ? JSON.parse(stored) : [];
 }
 
-export function saveTimelineEvent(event: TimelineEvent) {
+export async function fetchTimeline(): Promise<TimelineEvent[]> {
+    try {
+        const res = await fetch('/api/cms/timeline');
+        const data = await res.json();
+        if (data) {
+            localStorage.setItem('timeline', JSON.stringify(data));
+            return data;
+        }
+    } catch(e) {}
+    return getTimeline();
+}
+
+export async function saveTimelineEvent(event: TimelineEvent) {
   const timeline = getTimeline();
   const index = timeline.findIndex(e => e.id === event.id);
-  if (index >= 0) {
-    timeline[index] = event;
-  } else {
-    timeline.push(event);
-  }
+  if (index >= 0) timeline[index] = event;
+  else timeline.push(event);
   localStorage.setItem('timeline', JSON.stringify(timeline));
+  try {
+      await fetch('/api/cms/timeline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(timeline)
+      });
+  } catch(e) {}
 }
 
-export function deleteTimelineEvent(id: string) {
+export async function deleteTimelineEvent(id: string) {
   const timeline = getTimeline().filter(e => e.id !== id);
   localStorage.setItem('timeline', JSON.stringify(timeline));
+  try {
+      await fetch('/api/cms/timeline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(timeline)
+      });
+  } catch(e) {}
 }
